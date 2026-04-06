@@ -24,6 +24,11 @@ async function loadLatestData() {
     try {
         const latestResponse = await fetch("http://localhost:8080/api/sensor/latest");
         const latestData = await latestResponse.json();
+        const user = localStorage.getitem("user");
+
+        if(!user) {
+            window.location.href = "/login.html";
+        }
 
         if (latestData) {
             document.getElementById("temperature").textContent =
