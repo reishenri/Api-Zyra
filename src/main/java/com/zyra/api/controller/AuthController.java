@@ -1,24 +1,37 @@
 package com.zyra.api.controller;
 
-import com.zyra.api.model.User;
-import com.zyra.api.service.UserService;
+import com.zyra.api.dto.AuthRequestDTO;
+import com.zyra.api.dto.AuthResponseDTO;
+import com.zyra.api.dto.RegisterRequestDTO;
+import com.zyra.api.service.AuthService;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "*")
 public class AuthController {
 
-    private final UserService service;
+    private final AuthService authService;
 
-    public AuthController(UserService service) {
-        this.service = service;
+    public AuthController(AuthService authService) {
+        this.authService = authService;
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<AuthResponseDTO> register(
+            @RequestBody @Valid RegisterRequestDTO request
+    ) {
+        AuthResponseDTO response = authService.register(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @PostMapping("/login")
-    public User login(@RequestBody User request) {
-        return service.getByEmail(request.getEmail())
-                .filter(user -> user.getPassword().equals(request.getPassword()))
-                .orElse(null);
+    public ResponseEntity<AuthResponseDTO> login(
+            @RequestBody @Valid AuthRequestDTO request
+    ) {
+        AuthResponseDTO response = authService.login(request);
+        return ResponseEntity.ok(response);
     }
 }
