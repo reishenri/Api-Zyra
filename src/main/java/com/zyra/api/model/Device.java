@@ -1,5 +1,7 @@
 package com.zyra.api.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,24 +22,30 @@ public class Device {
 
     private String location;
 
+    // 🔥 CORREÇÃO DO LOOP
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
+    @JsonBackReference
     private User user;
 
+    // 🔥 EVITA PROBLEMAS DE SERIALIZAÇÃO (opcional, mas recomendado)
+    @JsonIgnore
     @OneToMany(mappedBy = "device", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SensorData> sensorDataList = new ArrayList<>();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "device", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Alert> alerts = new ArrayList<>();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "device", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<IrrigationLog> irrigationLogs = new ArrayList<>();
 
+    @JsonIgnore
     @OneToOne(mappedBy = "device", cascade = CascadeType.ALL, orphanRemoval = true)
     private IrrigationRule irrigationRule;
 
-    public Device() {
-    }
+    public Device() {}
 
     public Device(Long id, String name, String serialNumber, String location, User user) {
         this.id = id;
@@ -46,6 +54,8 @@ public class Device {
         this.location = location;
         this.user = user;
     }
+
+    // GETTERS
 
     public Long getId() {
         return id;
@@ -72,7 +82,7 @@ public class Device {
     }
 
     public List<Alert> getAlerts() {
-        return alerts;
+        return alerts; // 🔥 CORRIGIDO
     }
 
     public List<IrrigationLog> getIrrigationLogs() {
@@ -82,6 +92,8 @@ public class Device {
     public IrrigationRule getIrrigationRule() {
         return irrigationRule;
     }
+
+    // SETTERS
 
     public void setId(Long id) {
         this.id = id;
